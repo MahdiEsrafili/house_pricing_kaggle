@@ -11,63 +11,79 @@ pipe = joblib.load('pipe.joblib')
 
 app = dash.Dash()
 numeric_fields = ['LotFrontage','LotArea', 'OverallQual' ,'OverallCond']
-categorical_fields = {
-    'MSZoning': [ 'A', 'C', 'FV','I','RH', 'RL','RP', 'RM'],
-    'Street' : ['Grvl',	'Pave'] ,
-    'Alley' : [ 'Grvl', 'Pave','NA' ],
-    'LotShape' : ['Reg'	,'IR1', 'IR2', 'IR3']
-}
+categorical_fields = ['MSZoning', 'Street','Alley' ,'LotShape' ]
+style = {
+        'height': '25px',
+        'width':'200px',
+        'margin-top': '10px',
+        'margin-bottom': '10px',
+        'margin-right': '10px',
+        'margin-left': '0px',
+       }
+
+style_numeric = {
+        'height': '25px',
+        'width':'50px',
+        'margin-top': '10px',
+        'margin-bottom': '10px',
+        'margin-right': '10px',
+        'margin-left': '5px',
+       }
 
 
 app.layout = html.Div( [
-    html.Div(
-    [dcc.Input(id ="{}_id".format(field), value=0, type= 'number',placeholder="input {}".format(field) ) for field in numeric_fields] 
-    ),
+
+
+
+     html.Div([html.Label([field,
+         dcc.Input(id ="{}_id".format(field), value=0, type= 'number',placeholder="input {}".format(field),  style=style_numeric ) 
+     ]) for field in numeric_fields]),
+     html.Br(),
+     html.Label(["zoning classification", dcc.Dropdown(id="MSZoning_id", options = [
+         {'label':'Agriculture', 'value':'A'},
+         {'label':'Commercial', 'value':'C'},
+         {'label':'Floating Village Residential', 'value':'FV'},
+         {'label':'Industrial', 'value':'I'}
+     ], value='A' , style=style
+      )]),
 
     html.Br(),
+     html.Label(["street access", dcc.Dropdown(id="Street_id", options = [
+         {'label':'Gravel', 'value':'Grvl'},
+         {'label':'Paved', 'value':'Pave'}
+     ], value='Grvl',style=style)]),
 
-    html.Div(
-        [
-        dcc.Input(id ="MSZoning_id", list="MSZoning_list", value='', type= 'text',placeholder="input {}".format('MSZoning')),
-        dcc.Input(id ="Street_id", list="Street_list", value='', type= 'text',placeholder="input {}".format('Street')),
-        dcc.Input(id ="Alley_id", list="Alley_list", value='', type= 'text',placeholder="input {}".format('Alley')),
-        dcc.Input(id ="LotShape_id", list="LotShape_list", value='', type= 'text',placeholder="input {}".format('LotShape')),
-       
-        html.Datalist(id="MSZoning_list", children=[
-        html.Option(value=field) for field in categorical_fields['MSZoning']
-            ]),
+    html.Br(),
+    html.Label(["alley access", dcc.Dropdown(id="Alley_id", options = [
+         {'label':'Gravel', 'value':'Grvl'},
+         {'label':'Paved', 'value':'Pave'},
+         {'label':'No alley', 'value':'NA'}
+     ], value='Grvl',style=style)]),
 
-        html.Datalist(id="Street_list", children=[
-        html.Option(value=field) for field in categorical_fields['Street']
-            ]),
+    html.Br(),
+    html.Label(["shape of property", dcc.Dropdown(id="LotShape_id", options = [
+         {'label':'Regular', 'value':'Reg'},
+         {'label':'Slightly irregular', 'value':'IR2'},
+         {'label':'Moderately Irregular', 'value':'IR3'},
+         {'label':'Irregular', 'value':'Regular'}
+     ], value='Reg',style=style)]),
 
-        html.Datalist(id="Alley_list", children=[
-        html.Option(value=field) for field in categorical_fields['Alley']
-            ]),
-
-        html.Datalist(id="LotShape_list", children=[
-        html.Option(value=field) for field in categorical_fields['LotShape']
-            ]),
-        html.Br(),
-        html.Div(id="out-all-types")
-
-
-        ]),
-        html.Br(),
-        html.Button('Submit', id='submit-val', n_clicks=0),
-        html.Br(),
-        html.Div(id='price')  
+    html.Br(),
+    html.Button('Submit', id='submit-val', n_clicks=0, style= {'background-color':'MediumSeaGreen'}),
+    html.Br(),
+    html.Div(id='price')  
 ])
 
 
 @app.callback(Output("price", "children"),
     [Input('submit-val', 'n_clicks')],
-    [State("{}_id".format(field), 'value') for field in numeric_fields + list(categorical_fields.keys())]
+    [State("{}_id".format(field), 'value') for field in numeric_fields + categorical_fields]
     )
 def submit(n_clicks, *vals):
-    clmn =  numeric_fields + list(categorical_fields.keys())
+    clmn =  numeric_fields + categorical_fields
     df = pd.DataFrame({clmn[v] : [vals[v]] for v in range(len(vals))})
-    return str(pipe.predict(df))
+    price = pipe.predict(df)[0]
+    return "Price: {}".format(str(price))
     
 if __name__ == '__main__':
     app.run_server(debug=True)
