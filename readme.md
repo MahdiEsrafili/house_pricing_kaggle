@@ -7,4 +7,4 @@ in the housing_clean_code.ipynb, I fitted model and exported it with joblib. bec
 
 The Dashboard.py is a simple Dashboard created by Plotly Dash.
 
-![](dashboard.png)
+![](dashboard.PNG)
