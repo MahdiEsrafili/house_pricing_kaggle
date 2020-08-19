@@ -6,3 +6,5 @@ In housing_clean_code.ipynb, pipelining added for multiple processes.
 in the housing_clean_code.ipynb, I fitted model and exported it with joblib. because i created custom pipeline, its important to export classes as py file and then importing it in target file.
 
 The Dashboard.py is a simple Dashboard created by Plotly Dash.
+
+![](dashboard.png)
