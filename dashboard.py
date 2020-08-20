@@ -9,8 +9,10 @@ from custom_preprocessor import custom_preprocessor
 from ModifiedLabelEncoder import ModifiedLabelEncoder
 pipe = joblib.load('pipe.joblib')
 
-app = dash.Dash()
-numeric_fields = ['LotFrontage','LotArea', 'OverallQual' ,'OverallCond']
+app = dash.Dash(title= 'House Pricing')
+
+numeric_fields = ['LotFrontage','LotArea', 'OverallQual' ,'OverallCond',
+ 'YearBuilt', 'YearRemodAdd','MSSubClass', 'TotalBsmtSF','GrLivArea', 'BsmtFullBath']
 categorical_fields = ['MSZoning', 'Street','Alley' ,'LotShape' ]
 style = {
         'height': '25px',
@@ -32,8 +34,6 @@ style_numeric = {
 
 
 app.layout = html.Div( [
-
-
 
      html.Div([html.Label([field,
          dcc.Input(id ="{}_id".format(field), value=0, type= 'number',placeholder="input {}".format(field),  style=style_numeric ) 

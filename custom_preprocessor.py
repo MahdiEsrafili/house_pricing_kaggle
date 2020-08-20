@@ -11,9 +11,9 @@ class custom_preprocessor( BaseEstimator, TransformerMixin):
     
     def fit_transform(self, X, y=None):
         return self.fit(X).transform(X)
+    
     def transform(self, X, y=None):
         res = X.copy()
-        ##custom
         categorical_columns = res.select_dtypes('object').columns
         numeric_columns = res.select_dtypes('number').columns
         
